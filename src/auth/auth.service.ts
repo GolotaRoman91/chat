@@ -1,5 +1,5 @@
 import { UserService } from './../user/user.service';
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { SignUpDto } from './dto/sign-up.dto';
 import { error } from 'console';
 import * as bcrypt from 'bcrypt';
@@ -13,7 +13,7 @@ export class AuthService {
             const candidate = await this.userService.getUserByLogin(dto.login)
 
             if (candidate) {
-                throw error('User with this login already exist')
+                throw new HttpException('User with this login already exists', HttpStatus.CONFLICT);
             }
 
             const saltOrRounds = 10
