@@ -3,10 +3,18 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { SignUpDto } from './dto/sign-up.dto';
 import { error } from 'console';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import { SignInDto } from './dto/sign-in.dto';
+import { access } from 'fs';
 
+
+console.log()
 @Injectable()
 export class AuthService {
-    constructor(private userService: UserService) {}
+    constructor(
+        private userService: UserService,
+        private readonly jwtService: JwtService,
+    ) {}
 
     async signUp(dto: SignUpDto) {
         try {
@@ -32,6 +40,28 @@ export class AuthService {
             console.error('AuthService -> signUp: ', error);
             throw new HttpException(error, error.status);
         }
+    }
+
+    async signIn(dto: SignInDto) {
+        const user = await this.userService.getUserByLogin(dto.login)
+
+        if(!user) {
+            throw new HttpException('Invalid credentials', HttpStatus.NOT_FOUND);
+        }
+
+        const isPasswordValid = await bcrypt.compare(dto.password, user.password)
+
+        if (!isPasswordValid) {
+            throw new HttpException('Invalid credentials', HttpStatus.NOT_FOUND)
+        }
+
+        const token = this.generateToken({ id: user.id }, process.env.JWT_SECRET, process.env.JWT_ACCESS_TIME);
+
+        return { accessToken: token }
+    }
+
+    private generateToken(payload, key: string, time: string) {
+        return this.jwtService.sign(payload, { secret: key, expiresIn: time });
     }
 }
 
