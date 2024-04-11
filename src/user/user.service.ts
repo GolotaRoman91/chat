@@ -25,4 +25,8 @@ export class UserService {
             throw new HttpException(error, error.status);
         }
     }
+
+    async deleteUser(id: number) {
+        await this.userRepository.delete(id)
+    }
 }

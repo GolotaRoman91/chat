@@ -63,6 +63,11 @@ export class AuthService {
     private generateToken(payload, key: string, time: string) {
         return this.jwtService.sign(payload, { secret: key, expiresIn: time });
     }
+
+    async deleteUser(login: string) {
+        const user = await this.userService.getUserByLogin(login)
+        await this.userService.deleteUser(user.id)
+    }
 }
 
 

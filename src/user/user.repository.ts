@@ -1,6 +1,7 @@
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './user.model';
 import { SignUpDto } from 'src/auth/dto/sign-up.dto';
+import { where } from 'sequelize';
 
 export class UserRepository {
     constructor(
@@ -14,5 +15,9 @@ export class UserRepository {
 
     async createUser(dto: SignUpDto) {
         await this.repository.create(dto)
+    }
+
+    async delete(id: number) {
+        await this.repository.destroy({ where: {id} })
     }
 }
