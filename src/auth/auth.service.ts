@@ -5,7 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { SignInDto } from './dto/sign-in.dto';
 
-
+console.log('+')
 @Injectable()
 export class AuthService {
     constructor(
